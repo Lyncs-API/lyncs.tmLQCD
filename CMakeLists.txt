@@ -10,7 +10,7 @@ enable_language(Fortran)
 
 ExternalProject_Add(tmLQCD
   GIT_REPOSITORY https://github.com/etmc/tmLQCD
-  GIT_TAG master
+  GIT_TAG c1b0609
   PATCH_COMMAND git apply ${PATCHES}
   CONFIGURE_COMMAND /bin/sh -c "autoconf && ./configure CC=${CMAKE_C_COMPILER} F77=${CMAKE_Fortran_COMPILER} CFLAGS=\"-std=gnu99 -O3 -ffast-math -fopenmp\" LIBS=-lopenblas --prefix=${EXTERNAL_INSTALL_LOCATION} --enable-mpi=no --enable-omp=no --with-limedir=${LIME_PATH}"
   BUILD_COMMAND make -j && make -j install
