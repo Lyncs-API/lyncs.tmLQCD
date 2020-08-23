@@ -7,7 +7,7 @@ __all__ = [
     "get_g_gauge_field",
 ]
 
-from numpy import array, prod, frombuffer
+from numpy import array, prod, frombuffer, allclose
 from lyncs_cppyy.ll import array_to_pointers, to_pointer, addressof, free
 from .lib import lib
 
@@ -16,6 +16,8 @@ class Gauge:
     "Interface for gauge fields"
 
     def __init__(self, arr, copy=False):
+        if isinstance(arr, Gauge):
+            arr = arr.field
         arr = array(arr, copy=copy)
         if len(arr.shape) != 4 + 1 + 2 or arr.shape[-3:] != (4, 3, 3):
             raise ValueError("Array must have shape (X,Y,Z,T,4,3,3)")
@@ -84,7 +86,7 @@ class Gauge:
         c0 is the plaq_coeff (see volume_plaquette) and c1 the rect_coeff
         """
         return (1 - 8 * rect_coeff) * self.volume_plaquette(plaq_coeff) + (
-            rect_coeff * self.rectangles() if rect_coeff != 0 else 0
+            (rect_coeff * self.volume_rectangles()) if rect_coeff != 0 else 0
         )
 
     def symanzik_gauge_action(self, plaq_coeff=0):
@@ -118,6 +120,17 @@ class Gauge:
         xlfInfo = lib.construct_paramsXlfInfo(self.plaquette(), number)
         lib.write_gauge_field(filename, 64, xlfInfo)
         free(xlfInfo)
+
+    def read(self, filename):
+        "Reads from file in lime format"
+        lib.gauge_precision_read_flag = 64
+        print(lib.gauge_precision_read_flag)
+        lib.read_gauge_field(filename, self.su3_field)
+
+    def __eq__(self, other):
+        if isinstance(other, Gauge):
+            other = other.field
+        return allclose(self.field, other)
 
 
 def get_g_gauge_field():
