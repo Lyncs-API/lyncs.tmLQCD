@@ -41,6 +41,7 @@ jobs:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.pypi_password }}
       run: |
+        pip uninstall -y lyncs_tmLQCD
         pip install lyncs_tmLQCD==$(lyncs_setuptools version) || (
           pip install twine
           python setup.py sdist
