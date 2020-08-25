@@ -42,6 +42,8 @@ The package can be installed via `pip`:
 pip install [--user] lyncs_tmLQCD
 ```
 
+## Documentation
+
 ## Contributing
 
 When contributing to the package, clone the source from [github](https://github.com/Lyncs-API/lyncs.tmLQCD):
@@ -51,21 +53,21 @@ git clone https://github.com/Lyncs-API/lyncs.tmLQCD
 cd lyncs.tmLQCD
 ```
 
-Install the package from the source directory in development mode:
+install the package in development mode:
 
 ```
 pip install -e .[all]
 ```
 
-Run the test-suite for checking the correctness of the installation:
+and run the test-suite for checking the correctness of the installation:
 
 ```
 pytest -v
 ```
 
-If everything does well, you should see that all the tests are passed and obtain a coverage report.
+If everything goes well, you should see all the tests passed and obtain a coverage report.
 
-A main implementation requirement is to have an **high code-coverage**.
+A main implementation requirement is an **high code-coverage**.
 If you are going to implement something new, please, also add the respective
 test files or functions in the `test/` directory.
 
@@ -92,11 +94,10 @@ pylint lyncs_tmLQCD
 ```
 
 **NOTE:** pylint and black are incompatible in few formatting assumptions. Please, ignore
-the comments C0303 and C0330 of pylint. If they show up in the file you have edited/added,
-please add the following line after the documentation string at the beginning of the file:
+the comments C0303 and C0330 of pylint. If they show up in the files you have edited/added,
+please, add the following line after the documentation string at the beginning of the respective files:
 
 ```
 # pylint: disable=C0303,C0330
 ```
 
-## Documentation
