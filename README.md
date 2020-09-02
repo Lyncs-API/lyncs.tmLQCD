@@ -21,12 +21,20 @@ such as commodity PC clusters and the Blue Gene family.
 
 ## Installation
 
-**NOTE**: tmLQCD requires a fortran compiler, flex, openblas and lapack.
-
-The requirements can be installed via `apt-get`:
+The package can be installed via `pip`:
 
 ```
-sudo apt-get install -y flex libblas-dev liblapack-dev gfortran
+pip install [--user] lyncs_tmLQCD
+```
+
+### External dependencies
+
+For compiling tmLQCD, a fortran compiler, flex, openblas and lapack are required.
+
+These can be installed via `apt`:
+
+```
+apt install -y flex libopenblas-dev liblapack-dev gfortran
 ```
 
 OR using `conda`:
@@ -34,12 +42,6 @@ OR using `conda`:
 ```
 conda install -c anaconda openblas
 conda install -c conda-forge flex lapack fortran-compiler
-```
-
-The package can be installed via `pip`:
-
-```
-pip install [--user] lyncs_tmLQCD
 ```
 
 ## Documentation
