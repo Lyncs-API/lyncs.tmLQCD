@@ -99,8 +99,8 @@ class Gauge:
 
     def unity(self):
         "Creates a unity field"
-        self.field[:] = 0
-        self.field.reshape(-1, 9)[:, (0, 4, 8)] = 1
+        self[:] = 0
+        self.reshape(-1, 9)[:, (0, 4, 8)] = 1
 
     def random(self, repro=False):
         "Creates a random field"
@@ -108,11 +108,11 @@ class Gauge:
 
     def copy_to_global(self):
         "Copies the field to the global gauge field"
-        get_g_gauge_field().field[:] = self.field
+        get_g_gauge_field()[:] = self[:]
 
     def copy_from_global(self):
         "Copies the global gauge field to the local field"
-        self.field[:] = get_g_gauge_field().field
+        self[:] = get_g_gauge_field()[:]
 
     def write(self, filename, number=0):
         "Writes to file in lime format"
@@ -124,7 +124,6 @@ class Gauge:
     def read(self, filename):
         "Reads from file in lime format"
         lib.gauge_precision_read_flag = 64
-        print(lib.gauge_precision_read_flag)
         lib.read_gauge_field(filename, self.su3_field)
 
     def __eq__(self, other):
@@ -132,13 +131,27 @@ class Gauge:
             other = other.field
         return allclose(self.field, other)
 
+    def __repr__(self):
+        return repr(self.field)
+
+    def __str__(self):
+        return str(self.field)
+
+    def __getattr__(self, key):
+        return getattr(self.field, key)
+
+    def __getitem__(self, key):
+        return self.field[key]
+
+    def __setitem__(self, key, val):
+        self.field[key] = val
+
 
 def get_g_gauge_field():
     "Returns the global gauge field in usage by tmLQCD"
     assert lib.initialized
     shape = (lib.LX, lib.LY, lib.LZ, lib.T, 4, 3, 3)
-    ptr = to_pointer(addressof(lib.g_gauge_field[0]))
-    ptr = to_pointer(ptr[0], "double *")
+    ptr = to_pointer(addressof(lib.g_gauge_field))
     ptr.reshape((int(prod(shape)) * 2,))
     return Gauge(frombuffer(ptr, dtype="complex", count=prod(shape)).reshape(shape))
 
@@ -148,6 +161,5 @@ def get_g_iup():
     assert lib.initialized
     shape = (lib.LX, lib.LY, lib.LZ, lib.T, 4)
     ptr = to_pointer(addressof(lib.g_iup))
-    ptr = to_pointer(ptr[0], "int *")
     ptr.reshape((int(prod(shape)),))
     return frombuffer(ptr, dtype="int32", count=prod(shape)).reshape(shape)

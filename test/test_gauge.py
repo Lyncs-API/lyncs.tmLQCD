@@ -2,7 +2,7 @@ import tempfile
 from pytest import raises
 import numpy as np
 from lyncs_tmLQCD import Gauge
-from lyncs_tmLQCD.gauge import get_g_iup
+from lyncs_tmLQCD.gauge import get_g_iup, get_g_gauge_field
 
 
 def test_init():
@@ -43,6 +43,8 @@ def test_global():
     gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
     gauge.random()
     gauge.copy_to_global()
+    assert gauge == get_g_gauge_field()
+
     gauge_copy = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
     gauge_copy.copy_from_global()
     assert gauge == gauge_copy
@@ -58,6 +60,13 @@ def test_io():
     assert gauge == gauge_read
 
 
-def test_global():
+def test_repr():
+    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
+    gauge.random()
+    assert repr(gauge) == repr(gauge.field)
+    assert str(gauge) == str(gauge.field)
+
+
+def test_g_iup():
     g_iup = get_g_iup()
     g_iup[0, 0, 0, 0, 0] == 1
