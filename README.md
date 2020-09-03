@@ -5,6 +5,7 @@
 [![license](https://img.shields.io/github/license/Lyncs-API/lyncs.tmLQCD?logo=github&logoColor=white)](https://github.com/Lyncs-API/lyncs.tmLQCD/blob/master/LICENSE)
 [![build & test](https://img.shields.io/github/workflow/status/Lyncs-API/lyncs.tmLQCD/build%20&%20test?logo=github&logoColor=white)](https://github.com/Lyncs-API/lyncs.tmLQCD/actions)
 [![codecov](https://img.shields.io/codecov/c/github/Lyncs-API/lyncs.tmLQCD?logo=codecov&logoColor=white)](https://codecov.io/gh/Lyncs-API/lyncs.tmLQCD)
+[![pylint](https://img.shields.io/badge/pylint%20score-3.9%2F10-red?logo=python&logoColor=white)](http://pylint.pycqa.org/)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg?logo=codefactor&logoColor=white)](https://github.com/ambv/black)
 
 
@@ -21,12 +22,20 @@ such as commodity PC clusters and the Blue Gene family.
 
 ## Installation
 
-**NOTE**: tmLQCD requires a fortran compiler, flex, openblas and lapack.
-
-The requirements can be installed via `apt-get`:
+The package can be installed via `pip`:
 
 ```
-sudo apt-get install -y flex libblas-dev liblapack-dev gfortran
+pip install [--user] lyncs_tmLQCD
+```
+
+### External dependencies
+
+For compiling tmLQCD, a fortran compiler, flex, openblas and lapack are required.
+
+These can be installed via `apt`:
+
+```
+apt install -y flex libopenblas-dev liblapack-dev gfortran
 ```
 
 OR using `conda`:
@@ -36,11 +45,7 @@ conda install -c anaconda openblas
 conda install -c conda-forge flex lapack fortran-compiler
 ```
 
-The package can be installed via `pip`:
-
-```
-pip install [--user] lyncs_tmLQCD
-```
+## Documentation
 
 ## Contributing
 
@@ -51,21 +56,21 @@ git clone https://github.com/Lyncs-API/lyncs.tmLQCD
 cd lyncs.tmLQCD
 ```
 
-Install the package from the source directory in development mode:
+install the package in development mode:
 
 ```
 pip install -e .[all]
 ```
 
-Run the test-suite for checking the correctness of the installation:
+and run the test-suite for checking the correctness of the installation:
 
 ```
 pytest -v
 ```
 
-If everything does well, you should see that all the tests are passed and obtain a coverage report.
+If everything goes well, you should see all the tests passed and obtain a coverage report.
 
-A main implementation requirement is to have an **high code-coverage**.
+A main implementation requirement is an **high code-coverage**.
 If you are going to implement something new, please, also add the respective
 test files or functions in the `test/` directory.
 
@@ -92,11 +97,10 @@ pylint lyncs_tmLQCD
 ```
 
 **NOTE:** pylint and black are incompatible in few formatting assumptions. Please, ignore
-the comments C0303 and C0330 of pylint. If they show up in the file you have edited/added,
-please add the following line after the documentation string at the beginning of the file:
+the comments C0303 and C0330 of pylint. If they show up in the files you have edited/added,
+please, add the following line after the documentation string at the beginning of the respective files:
 
 ```
 # pylint: disable=C0303,C0330
 ```
 
-## Documentation

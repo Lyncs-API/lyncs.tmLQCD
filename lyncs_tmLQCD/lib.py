@@ -74,6 +74,7 @@ headers = [
     "init/init_geometry_indices.h",
     "init/init_gauge_field.h",
     "rational/elliptic.h",
+    "read_input.h",
     "measure_gauge_action.h",
     "measure_rectangles.h",
 ]

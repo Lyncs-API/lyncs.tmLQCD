@@ -7,7 +7,7 @@ __all__ = [
     "get_g_gauge_field",
 ]
 
-from numpy import array, prod, frombuffer
+from numpy import array, prod, frombuffer, allclose
 from lyncs_cppyy.ll import array_to_pointers, to_pointer, addressof, free
 from .lib import lib
 
@@ -16,6 +16,8 @@ class Gauge:
     "Interface for gauge fields"
 
     def __init__(self, arr, copy=False):
+        if isinstance(arr, Gauge):
+            arr = arr.field
         arr = array(arr, copy=copy)
         if len(arr.shape) != 4 + 1 + 2 or arr.shape[-3:] != (4, 3, 3):
             raise ValueError("Array must have shape (X,Y,Z,T,4,3,3)")
@@ -84,7 +86,7 @@ class Gauge:
         c0 is the plaq_coeff (see volume_plaquette) and c1 the rect_coeff
         """
         return (1 - 8 * rect_coeff) * self.volume_plaquette(plaq_coeff) + (
-            rect_coeff * self.rectangles() if rect_coeff != 0 else 0
+            (rect_coeff * self.volume_rectangles()) if rect_coeff != 0 else 0
         )
 
     def symanzik_gauge_action(self, plaq_coeff=0):
@@ -97,8 +99,8 @@ class Gauge:
 
     def unity(self):
         "Creates a unity field"
-        self.field[:] = 0
-        self.field.reshape(-1, 9)[:, (0, 4, 8)] = 1
+        self[:] = 0
+        self.reshape(-1, 9)[:, (0, 4, 8)] = 1
 
     def random(self, repro=False):
         "Creates a random field"
@@ -106,11 +108,11 @@ class Gauge:
 
     def copy_to_global(self):
         "Copies the field to the global gauge field"
-        get_g_gauge_field().field[:] = self.field
+        get_g_gauge_field()[:] = self[:]
 
     def copy_from_global(self):
         "Copies the global gauge field to the local field"
-        self.field[:] = get_g_gauge_field().field
+        self[:] = get_g_gauge_field()[:]
 
     def write(self, filename, number=0):
         "Writes to file in lime format"
@@ -119,13 +121,37 @@ class Gauge:
         lib.write_gauge_field(filename, 64, xlfInfo)
         free(xlfInfo)
 
+    def read(self, filename):
+        "Reads from file in lime format"
+        lib.gauge_precision_read_flag = 64
+        lib.read_gauge_field(filename, self.su3_field)
+
+    def __eq__(self, other):
+        if isinstance(other, Gauge):
+            other = other.field
+        return allclose(self.field, other)
+
+    def __repr__(self):
+        return repr(self.field)
+
+    def __str__(self):
+        return str(self.field)
+
+    def __getattr__(self, key):
+        return getattr(self.field, key)
+
+    def __getitem__(self, key):
+        return self.field[key]
+
+    def __setitem__(self, key, val):
+        self.field[key] = val
+
 
 def get_g_gauge_field():
     "Returns the global gauge field in usage by tmLQCD"
     assert lib.initialized
     shape = (lib.LX, lib.LY, lib.LZ, lib.T, 4, 3, 3)
-    ptr = to_pointer(addressof(lib.g_gauge_field[0]))
-    ptr = to_pointer(ptr[0], "double *")
+    ptr = to_pointer(addressof(lib.g_gauge_field))
     ptr.reshape((int(prod(shape)) * 2,))
     return Gauge(frombuffer(ptr, dtype="complex", count=prod(shape)).reshape(shape))
 
@@ -135,6 +161,5 @@ def get_g_iup():
     assert lib.initialized
     shape = (lib.LX, lib.LY, lib.LZ, lib.T, 4)
     ptr = to_pointer(addressof(lib.g_iup))
-    ptr = to_pointer(ptr[0], "int *")
     ptr.reshape((int(prod(shape)),))
     return frombuffer(ptr, dtype="int32", count=prod(shape)).reshape(shape)
