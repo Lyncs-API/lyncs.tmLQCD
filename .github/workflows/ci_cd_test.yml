@@ -49,7 +49,7 @@ jobs:
     - name: Pylint output
       run: |
         pip install lyncs_setuptools[pylint]
-        badge=$(lyncs_pylint_badge --fail-under 8 lyncs_setuptools | sed "s/\&/\\\&/g")
+        badge=$(lyncs_pylint_badge --fail-under 8 . | sed "s/\&/\\\&/g")
         badge_line=$(awk '/!\[pylint\]/ {print FNR}' README.md)
         test ${badge_line} && sed -i "${badge_line}s#.*#${badge}#" README.md
 
