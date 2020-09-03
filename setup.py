@@ -5,6 +5,7 @@ from lyncs_clime import __path__ as lime_path
 
 setup(
     "lyncs_tmLQCD",
+    data_files=[(".", ["config.py.in"])],
     ext_modules=[
         CMakeExtension(
             "lyncs_tmLQCD.lib",
