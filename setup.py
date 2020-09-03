@@ -6,22 +6,10 @@ from lyncs_clime import __path__ as lime_path
 setup(
     "lyncs_tmLQCD",
     ext_modules=[
-        CMakeExtension(
-            "lyncs_tmLQCD.lib",
-            ".",
-            [
-                "-DLIME_PATH=%s" % lime_path[0],
-            ],
-        )
+        CMakeExtension("lyncs_tmLQCD.lib", ".", ["-DLIME_PATH=%s" % lime_path[0],],)
     ],
-    install_requires=[
-        "lyncs-cppyy",
-        "lyncs-clime",
-        "numpy",
-    ],
-    extras_require={
-        "test": ["pytest", "pytest-cov"],
-    },
+    install_requires=["lyncs-cppyy", "lyncs-clime", "numpy",],
+    extras_require={"test": ["pytest", "pytest-cov"],},
     keywords=[
         "Lyncs",
         "tmLQCD",

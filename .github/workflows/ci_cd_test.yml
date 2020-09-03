@@ -46,9 +46,28 @@ jobs:
       run: |
         pip install -e .[all]
 
+    - name: Pylint output
+      run: |
+        pip install lyncs_setuptools[pylint]
+        badge=$(lyncs_pylint_badge --fail-under 8 lyncs_setuptools | sed "s/\&/\\\&/g")
+        badge_line=$(awk '/!\[pylint\]/ {print FNR}' README.md)
+        sed -i "${badge_line}s#.*#${badge}#" README.md
+
+    - name: Pushing changes if any
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Updating pylint score (from Github Action)
+        commit_user_name: sbacchio
+        commit_user_email: s.bacchio@gmail.com
+        commit_author: Simone Bacchio <s.bacchio@gmail.com>
+
     - name: Run tests
       run: |
         pytest -v
+
+    - name: Run lyncs_setuptools
+      run: |
+        lyncs_setuptools
 
     - name: Upload if not up to date
       env:
