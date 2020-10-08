@@ -46,9 +46,9 @@ class Gauge:
 
     def volume_plaquette(self, coeff=0):
         """
-        Returns the sum over the plaquettes.
-        coeff is used to weight differently the spatial and temporal plaquette, having
-        P(c) = (1+c) P_time + (1-c) P_space
+        Returns the sum over the plaquette.
+        The coefficient is used to weight differently the spatial and temporal plaquette,
+        having P(c) = (1+c) P_time + (1-c) P_space
         """
         if coeff == 0:
             return lib.measure_plaquette(self.su3_field)
@@ -82,7 +82,7 @@ class Gauge:
 
             (1-8*c1) ((1+c0) P_time + (1-c0) P_space) + c1*R
 
-        where P is the sum over plaquettes, R over the rectangles,
+        where P is the sum over plaquette, R over the rectangles,
         c0 is the plaq_coeff (see volume_plaquette) and c1 the rect_coeff
         """
         return (1 - 8 * rect_coeff) * self.volume_plaquette(plaq_coeff) + (
@@ -157,7 +157,7 @@ def get_g_gauge_field():
 
 
 def get_g_iup():
-    "Returns the neighboring indeces defined by tmLQCD"
+    "Returns the neighbouring indexes defined by tmLQCD"
     assert lib.initialized
     shape = (lib.LX, lib.LY, lib.LZ, lib.T, 4)
     ptr = to_pointer(addressof(lib.g_iup))

@@ -5,6 +5,7 @@ from lyncs_clime import __path__ as lime_path
 
 setup(
     "lyncs_tmLQCD",
+    exclude=["*.config"],
     data_files=[(".", ["config.py.in"])],
     ext_modules=[
         CMakeExtension(
@@ -16,12 +17,13 @@ setup(
         )
     ],
     install_requires=[
+        "lyncs-setuptools",
         "lyncs-cppyy",
         "lyncs-clime",
         "numpy",
     ],
     extras_require={
-        "test": ["pytest", "pytest-cov"],
+        "test": ["pytest", "pytest-cov", "lyncs-setuptools[pylint]"],
     },
     keywords=[
         "Lyncs",

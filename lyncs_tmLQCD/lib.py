@@ -1,6 +1,7 @@
 """
 Here we load the library libtmLQCD.so and used headers
 """
+# pylint: disable=assigning-non-slot
 
 __all__ = [
     "lib",
@@ -25,7 +26,7 @@ class tmLQCDLib(Lib):
 
     @property
     def initialized(self):
-        "Whether the glibal structure of tmLQCD has been initialized"
+        "Whether the global structure of tmLQCD has been initialized"
         return self._initialized
 
     def initialize(self, x, y, z, t, seed=None):
@@ -35,10 +36,10 @@ class tmLQCDLib(Lib):
             if not (x, y, z, t) == (self.LX, self.LY, self.LZ, self.T):
                 raise RuntimeError(
                     f"""
-                tmLQCD has been already initialized with
-                (x,y,z,t) = {(self.LX, self.LY, self.LZ, self.T)}
-                and cannot be initialized again.
-                """
+                    tmLQCD has been already initialized with
+                    (x,y,z,t) = {(self.LX, self.LY, self.LZ, self.T)}
+                    and cannot be initialized again.
+                    """
                 )
             return
         if not x == y == z:
