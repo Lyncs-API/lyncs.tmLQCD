@@ -5,6 +5,7 @@ Here we load the library libtmLQCD.so and used headers
 
 __all__ = [
     "lib",
+    "libBLAS",
     "PATHS",
 ]
 
@@ -13,6 +14,14 @@ from lyncs_cppyy import Lib, nullptr
 from lyncs_clime import lib as libclime
 
 from . import __path__
+
+from .config import BLAS_LIBRARIES
+
+libBLAS = Lib(
+    header="cblas.h",
+    library=BLAS_LIBRARIES.split(),
+    c_include=True,
+)
 
 
 class tmLQCDLib(Lib):
@@ -88,7 +97,7 @@ with open(__path__[0] + "/lib/redefine-syms.txt", "r") as fp:
 lib = tmLQCDLib(
     path=PATHS,
     header=headers,
-    library=["libtmLQCD.so", libclime],
+    library=["libtmLQCD.so", libclime, libBLAS],
     c_include=True,
     check="measure_plaquette",
     redefined=redefined,
