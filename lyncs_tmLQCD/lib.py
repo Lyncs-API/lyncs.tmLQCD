@@ -10,8 +10,8 @@ __all__ = [
 ]
 
 from time import time
-from lyncs_cppyy import Lib, nullptr
 from lyncs_clime import lib as libclime
+from lyncs_cppyy import Lib, nullptr
 
 from . import __path__
 
@@ -25,6 +25,8 @@ libBLAS = Lib(
 
 
 class tmLQCDLib(Lib):
+    "Extension of Lib with initialize for tmLQCD"
+
     __slots__ = [
         "_initialized",
     ]
@@ -42,7 +44,7 @@ class tmLQCDLib(Lib):
         "Initializes the global structure of tmLQCD"
 
         if self.initialized:
-            if not (x, y, z, t) == (self.LX, self.LY, self.LZ, self.T):
+            if (x, y, z, t) != (self.LX, self.LY, self.LZ, self.T):
                 raise RuntimeError(
                     f"""
                     tmLQCD has been already initialized with
