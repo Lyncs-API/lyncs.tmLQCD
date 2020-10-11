@@ -7,36 +7,33 @@ __all__ = [
     "get_g_gauge_field",
 ]
 
-from numpy import array, prod, frombuffer, allclose
+from numpy import array, prod, frombuffer, allclose, ndarray, asarray
 from lyncs_cppyy.ll import array_to_pointers, to_pointer, addressof, free
 from .lib import lib
 
 
-class Gauge:
+class Gauge(ndarray):
     "Interface for gauge fields"
 
-    def __init__(self, arr, copy=False):
-        if isinstance(arr, Gauge):
-            arr = arr.field
-        arr = array(arr, copy=copy)
-        if len(arr.shape) != 4 + 1 + 2 or arr.shape[-3:] != (4, 3, 3):
+    def _check(self):
+        if len(self.shape) != 4 + 1 + 2 or self.shape[-3:] != (4, 3, 3):
             raise ValueError("Array must have shape (X,Y,Z,T,4,3,3)")
-        if arr.dtype != "complex128":
+        if self.dtype != "complex128":
             raise TypeError("Expected a complex field")
+        lib.initialize(*self.shape[:4])
+        return self
 
-        lib.initialize(*arr.shape[:4])
-        self.shape = arr.shape
-        self._field = arr.reshape((-1, 4 * 9))
-        self._pointers = array_to_pointers(self._field)
+    def __new__(cls, input_array):
+        return asarray(input_array).view(cls)._check()
 
-    @property
-    def field(self):
-        "The array field"
-        return self._field.reshape(self.shape)
+    def __array_wrap__(self, out_arr, context=None):
+        return super().__array_wrap__(out_arr, context)
 
     @property
     def su3_field(self):
         "su3 view of the field"
+        if not hasattr(self, "_pointers"):
+            self._pointers = array_to_pointers(self._check().reshape((-1, 4 * 9)))
         return to_pointer(self._pointers.ptr, "su3 **")
 
     @property
@@ -125,26 +122,6 @@ class Gauge:
         "Reads from file in lime format"
         lib.gauge_precision_read_flag = 64
         lib.read_gauge_field(filename, self.su3_field)
-
-    def __eq__(self, other):
-        if isinstance(other, Gauge):
-            other = other.field
-        return allclose(self.field, other)
-
-    def __repr__(self):
-        return repr(self.field)
-
-    def __str__(self):
-        return str(self.field)
-
-    def __getattr__(self, key):
-        return getattr(self.field, key)
-
-    def __getitem__(self, key):
-        return self.field[key]
-
-    def __setitem__(self, key, val):
-        self.field[key] = val
 
 
 def get_g_gauge_field():

@@ -4,11 +4,11 @@ from lyncs_setuptools import setup, CMakeExtension, find_package
 from lyncs_clime import __path__ as lime_path
 
 install_requires = [
-        "lyncs-setuptools",
-        "lyncs-cppyy",
-        "lyncs-clime",
-        "numpy",
-    ]
+    "lyncs-setuptools",
+    "lyncs-cppyy",
+    "lyncs-clime",
+    "numpy",
+]
 
 # findMPI = find_package("MPI")
 # if findMPI["found"]:
