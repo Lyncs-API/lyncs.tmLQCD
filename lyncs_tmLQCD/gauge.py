@@ -26,9 +26,6 @@ class Gauge(ndarray):
     def __new__(cls, input_array):
         return asarray(input_array).view(cls)._check()
 
-    def __array_wrap__(self, out_arr, context=None):
-        return super().__array_wrap__(out_arr, context)
-
     @property
     def su3_field(self):
         "su3 view of the field"
