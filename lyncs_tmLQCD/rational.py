@@ -51,12 +51,26 @@ def zolotarev(n, eps):
     """
     Computes the amplitude, the coefficients and the error of
     the Zolotarev optimal rational approximation of degree [n,n]
-    to the function f(y)=1/sqrt(y) in the range eps<=y<=1.
+    to the function f(x)=1/sqrt(x) in the range eps<=x<=1.
 
-    Returns A, num, den, delta such that
-    f(y) = A*P(y)/Q(y) = 1/sqrt(y) + O(delta), with
-    P(y) = (y+num[0])*(y+num[1])*...*(y+num[n-1]),
-    Q(y) = (y+den[0])*(y+den[1])*...*(y+den[n-1]).
+    Returns
+    -------
+    (A, num, den, delta) such that
+        f(x) = A*P(x)/Q(x) = 1/sqrt(x) + O(delta), with
+        P(x) = (x+num[0])*(x+num[1])*...*(x+num[n-1]),
+        Q(x) = (x+den[0])*(x+den[1])*...*(x+den[n-1]).
+
+    Example
+    -------
+    >>> # Order
+    >>> n = 5
+    >>> # lower bound for x (1 is the higher)
+    >>> eps = 0.1
+    >>> # eps<=x<=1
+    >>> x = 0.5
+    >>> A, num, den, delta = zolotarev(n, eps)
+    >>> y = A * prod(x + num) / prod(x + den)
+    >>> assert isclose(y, 1 / x ** 0.5, rtol=delta)
     """
     ampl = numpy.zeros(1, dtype="float64")
     delta = numpy.zeros(1, dtype="float64")
