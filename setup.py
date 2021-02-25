@@ -10,10 +10,9 @@ install_requires = [
     "numpy",
 ]
 
-# findMPI = find_package("MPI")
-# if findMPI["found"]:
-#     install_requires.append("lyncs_mpi")
-
+findMPI = find_package("MPI")
+if findMPI["found"]:
+    install_requires.append("lyncs_mpi")
 
 setup(
     "lyncs_tmLQCD",

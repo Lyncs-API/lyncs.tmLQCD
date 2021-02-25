@@ -1,0 +1,178 @@
+diff --git a/global.h b/global.h
+index 2873c495..fd6904a6 100644
+--- a/global.h
++++ b/global.h
+@@ -241,6 +241,7 @@ EXTERN int little_solver_max_iter;
+ #ifdef TM_USE_MPI
+ EXTERN MPI_Status status;
+ EXTERN MPI_Request req1,req2,req3,req4;
++EXTERN MPI_Comm g_comm;
+ EXTERN MPI_Comm g_cart_grid;
+ EXTERN MPI_Comm g_mpi_time_slices;
+ EXTERN MPI_Comm g_mpi_SV_slices;
+diff --git a/read_input.l b/read_input.l
+index 902920cb..470f0254 100644
+--- a/read_input.l
++++ b/read_input.l
+@@ -3094,6 +3094,9 @@ int read_input(char * conf_file){
+   N_PROC_X = _default_N_PROC_X;
+   N_PROC_Y = _default_N_PROC_Y;
+   N_PROC_Z = _default_N_PROC_Z;
++#endif
++#ifdef TM_USE_MPI
++  g_comm = MPI_COMM_WORLD;
+ #endif
+   propagator_comparison = 0;
+   nb_cores = 1;
+diff --git a/replace_comm_world.sh b/replace_comm_world.sh
+new file mode 100755
+index 00000000..8abbf2dd
+--- /dev/null
++++ b/replace_comm_world.sh
+@@ -0,0 +1 @@
++find -name "*.c" -or -name "*.h" | xargs -n 1 sed -i 's/MPI_COMM_WORLD/g_comm/g'
+diff --git a/linalg/scalar_prod_r.c b/linalg/scalar_prod_r.c
+index 4ae11288..14fd289f 100644
+--- a/linalg/scalar_prod_r.c
++++ b/linalg/scalar_prod_r.c
+@@ -31,8 +31,8 @@
+ #endif
+ #ifdef TM_USE_OMP
+ # include <omp.h>
+-# include <global.h>
+ #endif
++# include <global.h>
+ #include "su3.h"
+ #include "scalar_prod_r.h"
+ 
+diff --git a/linalg/assign_mul_add_r_and_square.c b/linalg/assign_mul_add_r_and_square.c
+index a14ee447..7d72157a 100644
+--- a/linalg/assign_mul_add_r_and_square.c
++++ b/linalg/assign_mul_add_r_and_square.c
+@@ -27,8 +27,8 @@
+ #include <complex.h>
+ #ifdef TM_USE_OMP
+ # include <omp.h>
+-# include <global.h>
+ #endif
++#include <global.h>
+ #include "su3.h"
+ #include "assign_mul_add_r_and_square.h"
+ 
+diff --git a/linalg/diff_and_square_norm.c b/linalg/diff_and_square_norm.c
+index 7dadbbef..179bd56b 100644
+--- a/linalg/diff_and_square_norm.c
++++ b/linalg/diff_and_square_norm.c
+@@ -24,6 +24,7 @@
+ #ifdef TM_USE_MPI
+ # include <mpi.h>
+ #endif
++#include "global.h"
+ #include "su3.h"
+ #include "diff_and_square_norm.h"
+ 
+diff --git a/linalg/scalar_prod_body.c b/linalg/scalar_prod_body.c
+index 75979ce6..04760a0d 100644
+--- a/linalg/scalar_prod_body.c
++++ b/linalg/scalar_prod_body.c
+@@ -17,6 +17,8 @@
+  * along with tmLQCD.  If not, see <http://www.gnu.org/licenses/>.
+  ***********************************************************************/
+ 
++#include <global.h>
++
+ _Complex double _PSWITCH(scalar_prod)(const _PTSWITCH(spinor) * const S, const _PTSWITCH(spinor) * const R, 
+                                       const int N, const int parallel) {
+   _Complex double ALIGN res = 0.0;
+diff --git a/linalg/scalar_prod_i.c b/linalg/scalar_prod_i.c
+index 7b9098c4..19efd984 100644
+--- a/linalg/scalar_prod_i.c
++++ b/linalg/scalar_prod_i.c
+@@ -34,6 +34,7 @@
+ #ifdef TM_USE_MPI
+ # include <mpi.h>
+ #endif
++#include <global.h>
+ #include <complex.h>
+ #include "su3.h"
+ #include "scalar_prod_i.h"
+diff --git a/linalg/scalar_prod_r_32.c b/linalg/scalar_prod_r_32.c
+index e0d4cee6..cedd0c6b 100644
+--- a/linalg/scalar_prod_r_32.c
++++ b/linalg/scalar_prod_r_32.c
+@@ -6,8 +6,8 @@
+ #endif
+ #ifdef TM_USE_OMP
+ # include <omp.h>
+-# include <global.h>
+ #endif
++#include <global.h>
+ #include "su3.h"
+ #include "scalar_prod_r_32.h"
+ 
+diff --git a/linalg/square_and_minmax.c b/linalg/square_and_minmax.c
+index a842a855..7ad66b90 100644
+--- a/linalg/square_and_minmax.c
++++ b/linalg/square_and_minmax.c
+@@ -34,8 +34,8 @@
+ #endif
+ #ifdef TM_USE_OMP
+ # include <omp.h>
+-# include "global.h"
+ #endif
++#include "global.h"
+ #include <complex.h>
+ #include "su3.h"
+ #include "su3adj.h"
+diff --git a/linalg/square_and_prod_r.c b/linalg/square_and_prod_r.c
+index cdce568a..9f492b49 100644
+--- a/linalg/square_and_prod_r.c
++++ b/linalg/square_and_prod_r.c
+@@ -35,6 +35,7 @@
+ #ifdef TM_USE_MPI
+ # include <mpi.h>
+ #endif
++#include "global.h"
+ #include "su3.h"
+ #include "square_and_prod_r.h"
+ 
+diff --git a/linalg/square_norm.c b/linalg/square_norm.c
+index 3ec9561c..1f460c30 100644
+--- a/linalg/square_norm.c
++++ b/linalg/square_norm.c
+@@ -34,8 +34,8 @@
+ #endif
+ #ifdef TM_USE_OMP
+ # include <omp.h>
+-# include "global.h"
+ #endif
++#include "global.h"
+ #include <complex.h>
+ #include "su3.h"
+ #if (defined SSE || defined SSE2 || defined SSE3)
+diff --git a/linalg/square_norm_32.c b/linalg/square_norm_32.c
+index 605c0319..9ee384d5 100644
+--- a/linalg/square_norm_32.c
++++ b/linalg/square_norm_32.c
+@@ -9,8 +9,8 @@
+ #endif
+ #ifdef TM_USE_OMP
+ # include <omp.h>
+-# include "global.h"
+ #endif
++#include "global.h"
+ #include <complex.h>
+ #include "su3.h"
+ #include "square_norm_32.h"
+diff --git a/sighandler.c b/sighandler.c
+index 311d2fbd..22d44a93 100644
+--- a/sighandler.c
++++ b/sighandler.c
+@@ -40,6 +40,7 @@
+ #ifdef TM_USE_MPI
+ #  include <mpi.h>
+ #endif
++#include <global.h>
+ 
+ 
+ /* Catch an illegal instruction in order */
