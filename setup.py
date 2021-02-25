@@ -29,7 +29,7 @@ setup(
     ],
     install_requires=install_requires,
     extras_require={
-        "test": ["pytest", "pytest-cov", "lyncs-setuptools[pylint]"],
+        "test": ["pytest", "pytest-cov", "lyncs-setuptools[pylint]", "scipy"],
     },
     keywords=[
         "Lyncs",
