@@ -7,7 +7,7 @@ __all__ = [
     "get_g_gauge_field",
 ]
 
-from numpy import array, prod, frombuffer, allclose, ndarray, asarray
+from numpy import array, prod, frombuffer, allclose, ndarray, asarray, empty_like
 from lyncs_cppyy.ll import array_to_pointers, to_pointer, addressof, free
 from .lib import lib
 
@@ -27,11 +27,16 @@ class Gauge(ndarray):
         return asarray(input_array).view(cls)._check()
 
     @property
-    def su3_field(self):
-        "su3 view of the field"
+    def ptr(self):
+        "Returns the raw pointer to the field"
         if not hasattr(self, "_pointers"):
             self._pointers = array_to_pointers(self._check().reshape((-1, 4 * 9)))
-        return to_pointer(self._pointers.ptr, "su3 **")
+        return self._pointers.ptr
+
+    @property
+    def su3_field(self):
+        "su3** view of the field"
+        return to_pointer(self.ptr, "su3 **")
 
     @property
     def volume(self):
@@ -119,6 +124,16 @@ class Gauge(ndarray):
         "Reads from file in lime format"
         lib.gauge_precision_read_flag = 64
         lib.read_gauge_field(filename, self.su3_field)
+
+    # def stout_smearing(self, rho=0.1, niters=1):
+    #     """
+    #     Returns a new gauge field with stout smearing using
+    #     the coefficient rho and the given number of iterations
+    #     """
+    #     out = Gauge(empty_like(self))
+    #     params = lib.stout_parameters(rho,niters)
+    #     lib.stout_smear(out.su3_field, params, self.su3_field)
+    #     return out
 
 
 def get_g_gauge_field():

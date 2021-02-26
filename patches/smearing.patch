@@ -1,0 +1,60 @@
+diff --git a/smearing/ape.ih b/smearing/ape.ih
+index 44823a3e..5d7c8f41 100644
+--- a/smearing/ape.ih
++++ b/smearing/ape.ih
+@@ -13,8 +13,8 @@
+ #include <ranlxd.h>
+ #include <sse.h>
+ #include <get_staples.h>
+-#include <xchange_gauge.h>
+-#include <xchange.h>
++#include <xchange/xchange_gauge.h>
++#include <xchange/xchange.h>
+ #include <io/gauge.h>
+ #include <update_backward_gauge.h>
+ 
+diff --git a/smearing/hex.ih b/smearing/hex.ih
+index 3eda3f7e..ec6432d9 100644
+--- a/smearing/hex.ih
++++ b/smearing/hex.ih
+@@ -13,8 +13,8 @@
+ #include <ranlxd.h>
+ #include <sse.h>
+ #include <get_staples.h>
+-#include <xchange_gauge.h>
+-#include <xchange.h>
++#include <xchange/xchange_gauge.h>
++#include <xchange/xchange.h>
+ #include <io/gauge.h>
+ #include <update_backward_gauge.h>
+ 
+diff --git a/smearing/hyp.ih b/smearing/hyp.ih
+index 73b4b1c1..c9f9223e 100644
+--- a/smearing/hyp.ih
++++ b/smearing/hyp.ih
+@@ -13,8 +13,8 @@
+ #include <ranlxd.h>
+ #include <sse.h>
+ #include <get_staples.h>
+-#include <xchange_gauge.h>
+-#include <xchange.h>
++#include <xchange/xchange_gauge.h>
++#include <xchange/xchange.h>
+ #include <io/gauge.h>
+ #include <update_backward_gauge.h>
+ 
+diff --git a/smearing/utils.ih b/smearing/utils.ih
+index 3546f5dd..7aed8995 100644
+--- a/smearing/utils.ih
++++ b/smearing/utils.ih
+@@ -13,8 +13,8 @@
+ #include <ranlxd.h>
+ #include <sse.h>
+ #include <get_staples.h>
+-#include <xchange_gauge.h>
+-#include <xchange.h>
++#include <xchange/xchange_gauge.h>
++#include <xchange/xchange.h>
+ #include <io/gauge.h>
+ #include <update_backward_gauge.h>
+ 

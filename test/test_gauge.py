@@ -67,6 +67,13 @@ def test_io():
     assert (gauge == gauge_read).all()
 
 
+# def test_stout():
+#     gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
+#     gauge.random()
+#     stout = gauge.stout_smearing(0.1,1)
+#     assert (stout==gauge).all()
+
+
 def test_g_iup():
     g_iup = get_g_iup()
     g_iup[0, 0, 0, 0, 0] == 1

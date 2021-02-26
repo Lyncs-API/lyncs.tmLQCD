@@ -102,6 +102,7 @@ headers = [
     "measure_rectangles.h",
     "rational/elliptic.h",
     "rational/zolotarev.h",
+    # "smearing/stout.h",
 ]
 
 defined = {}
