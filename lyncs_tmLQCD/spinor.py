@@ -25,6 +25,16 @@ class Spinor(Field):
         "spinor view of the field"
         return to_pointer(self.ptr, "spinor **")
 
+    def zero(self):
+        "Creates a zero field"
+        lib.zero_spinor_field(self.spinor, self.volume)
+
+    def unit(self, spin, col):
+        "Creates a unitary field where all the components (spin, col) are one"
+        assert 0 <= spin < 4
+        assert 0 <= col < 3
+        lib.constant_spinor_field(self.spinor, spin * 3 + col, self.volume)
+
     def random(self, repro=False):
         "Creates a uniform in [0,1] random field"
         lib.random_spinor_field_lexic(self.spinor, repro, lib.RN_UNIF)

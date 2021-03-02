@@ -12,6 +12,22 @@ def test_init():
         Spinor(np.zeros((4, 4, 4, 4, 4, 3), dtype="float"))
 
 
+def test_zero():
+    spinor = Spinor(np.ones((4, 4, 4, 4, 4, 3), dtype="complex"))
+    spinor.zero()
+    assert (spinor == 0).all()
+
+
+def test_unit():
+    spinor = Spinor(np.zeros((4, 4, 4, 4, 4, 3), dtype="complex"))
+    for s in range(4):
+        for c in range(3):
+            mat = np.zeros((4, 3), dtype="complex")
+            mat[s][c] = 1
+            spinor.unit(s, c)
+            assert (spinor == mat).all()
+
+
 def test_random():
     spinor = Spinor(np.zeros((4, 4, 4, 4, 4, 3), dtype="complex"))
     spinor.random()
