@@ -1,0 +1,15 @@
+diff --git a/operator.h b/operator.h
+index 0e234df3..22479e19 100644
+--- a/operator.h
++++ b/operator.h
+@@ -127,7 +127,9 @@ typedef struct {
+ 
+   spinorPrecWS *precWS;
+   
+-} operator;
++} tmLQCD_operator;
++
++#define operator tmLQCD_operator
+ 
+ /* operator list defined in operator.c */
+ extern operator operator_list[max_no_operators];

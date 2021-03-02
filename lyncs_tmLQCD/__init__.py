@@ -8,3 +8,4 @@ from . import config
 from .lib import *
 from .gauge import *
 from .rational import *
+from .operator import *

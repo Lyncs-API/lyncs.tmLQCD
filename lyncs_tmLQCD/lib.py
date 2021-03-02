@@ -100,6 +100,7 @@ headers = [
     "read_input.h",
     "measure_gauge_action.h",
     "measure_rectangles.h",
+    "operator.h",
     "rational/elliptic.h",
     "rational/zolotarev.h",
     # "smearing/stout.h",
