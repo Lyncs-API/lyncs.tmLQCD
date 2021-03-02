@@ -79,3 +79,49 @@ def test_proj():
     pplus = spinor.proj_plus()
     zero = pplus.proj_minus()
     assert np.allclose(zero, 0)
+
+
+def test_half():
+    spinor = Spinor(np.zeros((4, 4, 4, 4, 4, 3), dtype="complex"))
+    half = spinor.half()
+    assert spinor.size == half.size * 2
+
+
+def test_even_odd():
+    spinor = Spinor(np.zeros((4, 4, 4, 4, 4, 3), dtype="complex"))
+    spinor.random()
+    even = spinor.even()
+    odd = spinor.odd()
+    even2, odd2 = spinor.even_odd()
+    assert (even == even2).all()
+    assert (odd == odd2).all()
+
+    spinor2 = np.zeros_like(spinor)
+    spinor2.set_even(even)
+    spinor2.set_odd(odd)
+    assert (spinor == spinor2).all()
+
+    spinor2.zero()
+    spinor2.set_even_odd(even, odd)
+    assert (spinor == spinor2).all()
+
+
+def test_g5_even_odd():
+    spinor = Spinor(np.zeros((4, 4, 4, 4, 4, 3), dtype="complex"))
+    spinor.random()
+    even, odd = spinor.even_odd()
+    even = even.gamma5()
+    odd = odd.gamma5()
+
+    spinor2 = np.zeros_like(spinor)
+    spinor2.set_even_odd(even, odd)
+    assert (spinor.gamma5() == spinor2).all()
+
+
+def test_even_zero():
+    spinor = Spinor(np.ones((4, 4, 4, 4, 4, 3), dtype="complex"))
+    spinor.even_zero()
+    assert (spinor.even() == 0).all()
+    even, odd = spinor.even_odd()
+    assert (even == 0).all()
+    assert (odd == 1).all()

@@ -25,16 +25,23 @@ class Field(ndarray):
         "Data type of the field"
         return "complex128"
 
+    @property
+    def lattice(self):
+        "Returns the lattice size"
+        return self.shape[:4]
+
     def _check(self):
         fshape = self.field_shape
         if len(self.shape) != 4 + len(fshape) or self.shape[-len(fshape) :] != fshape:
             raise ValueError(f"Array must have shape (X,Y,Z,T,{str(fshape)[1:-1]})")
         if self.dtype != self.field_dtype:
             raise TypeError("Expected a complex field")
-        lib.initialize(*self.shape[:4])
+        lib.initialize(*self.lattice)
         return self
 
     def __new__(cls, input_array):
+        if isinstance(input_array, cls):
+            return input_array
         return asarray(input_array).view(cls)._check()
 
     @property
@@ -49,4 +56,4 @@ class Field(ndarray):
     @property
     def volume(self):
         "The total lattice volume"
-        return lib.VOLUME * lib.g_nproc
+        return lib.VOLUME
