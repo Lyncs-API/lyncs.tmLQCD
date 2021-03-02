@@ -7,48 +7,31 @@ __all__ = [
     "get_g_gauge_field",
 ]
 
-from numpy import array, prod, frombuffer, allclose
-from lyncs_cppyy.ll import array_to_pointers, to_pointer, addressof, free
+from numpy import prod, frombuffer
+from lyncs_cppyy.ll import to_pointer, addressof, free
+from lyncs_utils import static_property
+from .base import Field
 from .lib import lib
 
 
-class Gauge:
+class Gauge(Field):
     "Interface for gauge fields"
 
-    def __init__(self, arr, copy=False):
-        if isinstance(arr, Gauge):
-            arr = arr.field
-        arr = array(arr, copy=copy)
-        if len(arr.shape) != 4 + 1 + 2 or arr.shape[-3:] != (4, 3, 3):
-            raise ValueError("Array must have shape (X,Y,Z,T,4,3,3)")
-        if arr.dtype != "complex128":
-            raise TypeError("Expected a complex field")
-
-        lib.initialize(*arr.shape[:4])
-        self.shape = arr.shape
-        self._field = arr.reshape((-1, 4 * 9))
-        self._pointers = array_to_pointers(self._field)
-
-    @property
-    def field(self):
-        "The array field"
-        return self._field.reshape(self.shape)
+    @static_property
+    def field_shape():
+        "Shape of the field"
+        return (4, 3, 3)
 
     @property
     def su3_field(self):
-        "su3 view of the field"
-        return to_pointer(self._pointers.ptr, "su3 **")
-
-    @property
-    def volume(self):
-        "The total lattice volume"
-        return lib.VOLUME * lib.g_nproc
+        "su3** view of the field"
+        return to_pointer(self.ptr, "su3 **")
 
     def volume_plaquette(self, coeff=0):
         """
-        Returns the sum over the plaquettes.
-        coeff is used to weight differently the spatial and temporal plaquette, having
-        P(c) = (1+c) P_time + (1-c) P_space
+        Returns the sum over the plaquette.
+        The coefficient is used to weight differently the spatial and temporal plaquette,
+        having P(c) = (1+c) P_time + (1-c) P_space
         """
         if coeff == 0:
             return lib.measure_plaquette(self.su3_field)
@@ -82,7 +65,7 @@ class Gauge:
 
             (1-8*c1) ((1+c0) P_time + (1-c0) P_space) + c1*R
 
-        where P is the sum over plaquettes, R over the rectangles,
+        where P is the sum over plaquette, R over the rectangles,
         c0 is the plaq_coeff (see volume_plaquette) and c1 the rect_coeff
         """
         return (1 - 8 * rect_coeff) * self.volume_plaquette(plaq_coeff) + (
@@ -126,25 +109,15 @@ class Gauge:
         lib.gauge_precision_read_flag = 64
         lib.read_gauge_field(filename, self.su3_field)
 
-    def __eq__(self, other):
-        if isinstance(other, Gauge):
-            other = other.field
-        return allclose(self.field, other)
-
-    def __repr__(self):
-        return repr(self.field)
-
-    def __str__(self):
-        return str(self.field)
-
-    def __getattr__(self, key):
-        return getattr(self.field, key)
-
-    def __getitem__(self, key):
-        return self.field[key]
-
-    def __setitem__(self, key, val):
-        self.field[key] = val
+    # def stout_smearing(self, rho=0.1, niters=1):
+    #     """
+    #     Returns a new gauge field with stout smearing using
+    #     the coefficient rho and the given number of iterations
+    #     """
+    #     out = Gauge(empty_like(self))
+    #     params = lib.stout_parameters(rho,niters)
+    #     lib.stout_smear(out.su3_field, params, self.su3_field)
+    #     return out
 
 
 def get_g_gauge_field():
@@ -157,7 +130,7 @@ def get_g_gauge_field():
 
 
 def get_g_iup():
-    "Returns the neighboring indeces defined by tmLQCD"
+    "Returns the neighbouring indexes defined by tmLQCD"
     assert lib.initialized
     shape = (lib.LX, lib.LY, lib.LZ, lib.T, 4)
     ptr = to_pointer(addressof(lib.g_iup))

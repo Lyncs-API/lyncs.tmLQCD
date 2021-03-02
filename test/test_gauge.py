@@ -1,4 +1,5 @@
 import tempfile
+from pickle import dumps
 from pytest import raises
 import numpy as np
 from lyncs_tmLQCD import Gauge
@@ -7,7 +8,7 @@ from lyncs_tmLQCD.gauge import get_g_iup, get_g_gauge_field
 
 def test_init():
     gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    assert gauge == Gauge(gauge)
+    assert (gauge == Gauge(gauge)).all()
     with raises(ValueError):
         Gauge(np.zeros((4, 4, 4, 4), dtype="complex"))
     with raises(TypeError):
@@ -39,15 +40,21 @@ def test_random():
     )
 
 
+def test_dumps():
+    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
+    gauge.random()
+    assert dumps(gauge)
+
+
 def test_global():
     gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
     gauge.random()
     gauge.copy_to_global()
-    assert gauge == get_g_gauge_field()
+    assert (gauge == get_g_gauge_field()).all()
 
     gauge_copy = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
     gauge_copy.copy_from_global()
-    assert gauge == gauge_copy
+    assert (gauge == gauge_copy).all()
 
 
 def test_io():
@@ -57,14 +64,14 @@ def test_io():
     gauge.write(tmp + "/conf")
     gauge_read = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
     gauge_read.read(tmp + "/conf")
-    assert gauge == gauge_read
+    assert (gauge == gauge_read).all()
 
 
-def test_repr():
-    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    gauge.random()
-    assert repr(gauge) == repr(gauge.field)
-    assert str(gauge) == str(gauge.field)
+# def test_stout():
+#     gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
+#     gauge.random()
+#     stout = gauge.stout_smearing(0.1,1)
+#     assert (stout==gauge).all()
 
 
 def test_g_iup():
