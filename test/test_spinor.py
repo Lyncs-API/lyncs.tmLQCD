@@ -63,3 +63,19 @@ def test_Z2():
     assert np.isclose(mean.imag, 0.0, atol=0.1)
     assert np.isclose(spinor.std(), 1, atol=0.1)
     assert np.allclose(spinor.conj() * spinor, 1)
+
+
+def test_gamma5():
+    spinor = Spinor(np.zeros((4, 4, 4, 4, 4, 3), dtype="complex"))
+    spinor.random()
+    gamma5 = spinor.gamma5()
+    same = gamma5.gamma5()
+    assert np.allclose(spinor, same)
+
+
+def test_proj():
+    spinor = Spinor(np.zeros((4, 4, 4, 4, 4, 3), dtype="complex"))
+    spinor.random()
+    pplus = spinor.proj_plus()
+    zero = pplus.proj_minus()
+    assert np.allclose(zero, 0)

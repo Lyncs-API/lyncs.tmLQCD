@@ -6,6 +6,7 @@ __all__ = [
     "Spinor",
 ]
 
+from numpy import empty_like
 from lyncs_cppyy.ll import to_pointer
 from lyncs_utils import static_property
 from .base import Field
@@ -50,3 +51,21 @@ class Spinor(Field):
     def random_Z2(self, repro=False):
         "Creates a Z2 random field containing square roots of 1"
         lib.random_spinor_field_lexic(self.spinor, repro, lib.RN_Z2)
+
+    def gamma5(self):
+        "Returns a new spinor multiplied by gamma5"
+        out = empty_like(self)
+        lib.gamma5(out.spinor, self.spinor, self.volume)
+        return out
+
+    def proj_plus(self):
+        "Returns a new spinor with positive projection"
+        out = empty_like(self)
+        lib.P_plus(out.spinor, self.spinor, self.volume)
+        return out
+
+    def proj_minus(self):
+        "Returns a new spinor with negative projection"
+        out = empty_like(self)
+        lib.P_minus(out.spinor, self.spinor, self.volume)
+        return out

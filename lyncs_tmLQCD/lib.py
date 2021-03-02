@@ -92,6 +92,7 @@ headers = [
     "start.h",
     "mpi_init.h",
     "geometry_eo.h",
+    "gamma.h",
     "io/gauge.h",
     "io/params.h",
     "init/init_geometry_indices.h",
