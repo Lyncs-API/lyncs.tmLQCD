@@ -20,11 +20,16 @@ class Field(ndarray):
         "Shape of the field"
         raise NotImplementedError("Method to be oeverwritten")
 
+    @static_property
+    def field_dtype():
+        "Data type of the field"
+        return "complex128"
+
     def _check(self):
         fshape = self.field_shape
         if len(self.shape) != 4 + len(fshape) or self.shape[-len(fshape) :] != fshape:
             raise ValueError(f"Array must have shape (X,Y,Z,T,{str(fshape)[1:-1]})")
-        if self.dtype != "complex128":
+        if self.dtype != self.field_dtype:
             raise TypeError("Expected a complex field")
         lib.initialize(*self.shape[:4])
         return self
