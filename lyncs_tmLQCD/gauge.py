@@ -7,41 +7,25 @@ __all__ = [
     "get_g_gauge_field",
 ]
 
-from numpy import array, prod, frombuffer, allclose, ndarray, asarray, empty_like
-from lyncs_cppyy.ll import array_to_pointers, to_pointer, addressof, free
+from numpy import prod, frombuffer
+from lyncs_cppyy.ll import to_pointer, addressof, free
+from lyncs_utils import static_property
+from .base import Field
 from .lib import lib
 
 
-class Gauge(ndarray):
+class Gauge(Field):
     "Interface for gauge fields"
 
-    def _check(self):
-        if len(self.shape) != 4 + 1 + 2 or self.shape[-3:] != (4, 3, 3):
-            raise ValueError("Array must have shape (X,Y,Z,T,4,3,3)")
-        if self.dtype != "complex128":
-            raise TypeError("Expected a complex field")
-        lib.initialize(*self.shape[:4])
-        return self
-
-    def __new__(cls, input_array):
-        return asarray(input_array).view(cls)._check()
-
-    @property
-    def ptr(self):
-        "Returns the raw pointer to the field"
-        if not hasattr(self, "_pointers"):
-            self._pointers = array_to_pointers(self._check().reshape((-1, 4 * 9)))
-        return self._pointers.ptr
+    @static_property
+    def field_shape():
+        "Shape of the field"
+        return (4, 3, 3)
 
     @property
     def su3_field(self):
         "su3** view of the field"
         return to_pointer(self.ptr, "su3 **")
-
-    @property
-    def volume(self):
-        "The total lattice volume"
-        return lib.VOLUME * lib.g_nproc
 
     def volume_plaquette(self, coeff=0):
         """
