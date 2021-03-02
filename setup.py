@@ -4,6 +4,7 @@ from lyncs_setuptools import setup, CMakeExtension, find_package
 from lyncs_clime import __path__ as lime_path
 
 install_requires = [
+    "dataclasses",
     "lyncs-setuptools",
     "lyncs-cppyy",
     "lyncs-clime",
