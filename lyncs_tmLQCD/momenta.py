@@ -4,11 +4,13 @@ Functions for momenta field
 
 __all__ = [
     "Momenta",
+    "momenta",
 ]
 
+from functools import partial
 from lyncs_cppyy.ll import to_pointer
 from lyncs_utils import static_property
-from .base import Field
+from .base import Field, field
 from .lib import lib
 
 
@@ -32,3 +34,6 @@ class Momenta(Field):
     def random(self, repro=False):
         "Creates a random momenta field"
         lib.random_su3adj_field(repro, self.su3adj)
+
+
+momenta = partial(field, ftype=Momenta)

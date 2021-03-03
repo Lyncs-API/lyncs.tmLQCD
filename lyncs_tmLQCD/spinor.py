@@ -4,12 +4,16 @@ Functions for spinor field
 
 __all__ = [
     "Spinor",
+    "HalfSpinor",
+    "spinor",
+    "half_spinor",
 ]
 
+from functools import partial
 from numpy import empty_like
 from lyncs_cppyy.ll import to_pointer
 from lyncs_utils import static_property
-from .base import Field
+from .base import Field, field, to_half_lattice, half_field
 from .lib import lib
 
 
@@ -64,9 +68,7 @@ class Spinor(_Spinor):
 
     def half(self):
         "Returns an empty half spinor"
-        shape = list(self.shape)
-        assert shape[3] % 2 == 0, "Time must be divisible by 2"
-        shape[3] //= 2
+        shape = to_half_lattice(self.shape)
         return HalfSpinor(empty_like(self, shape=shape))
 
     def even(self):
@@ -129,3 +131,7 @@ class HalfSpinor(_Spinor):
     def lattice(self):
         "The total lattice volume"
         return self.shape[:3] + (self.shape[3] * 2,)
+
+
+spinor = partial(field, ftype=Spinor)
+half_spinor = partial(half_field, ftype=HalfSpinor)

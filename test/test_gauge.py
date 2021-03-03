@@ -2,76 +2,79 @@ import tempfile
 from pickle import dumps
 from pytest import raises
 import numpy as np
-from lyncs_tmLQCD import Gauge
+from lyncs_tmLQCD import Gauge, gauge
 from lyncs_tmLQCD.gauge import get_g_iup, get_g_gauge_field
+
+lattice = (4, 4, 4, 4)
 
 
 def test_init():
-    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    assert (gauge == Gauge(gauge)).all()
+    gf = Gauge(np.zeros(lattice + (4, 3, 3), dtype="complex"))
+    assert gf is Gauge(gf)
+    assert gf.shape == gauge().shape
     with raises(ValueError):
-        Gauge(np.zeros((4, 4, 4, 4), dtype="complex"))
+        Gauge(np.zeros(lattice, dtype="complex"))
     with raises(TypeError):
-        Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="float"))
+        Gauge(np.zeros(lattice + (4, 3, 3), dtype="float"))
 
 
 def test_unity():
-    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    gauge.unity()
-    assert gauge.plaquette() == 1
-    assert gauge.temporal_plaquette() == 1
-    assert gauge.spatial_plaquette() == 1
-    assert gauge.rectangles() == 1
-    assert gauge.gauge_action() == 6 * 4 ** 4
+    gf = gauge(lattice=lattice)
+    gf.unity()
+    assert gf.plaquette() == 1
+    assert gf.temporal_plaquette() == 1
+    assert gf.spatial_plaquette() == 1
+    assert gf.rectangles() == 1
+    assert gf.gauge_action() == 6 * 4 ** 4
     assert np.isclose(
-        gauge.symanzik_gauge_action(), 6 * 4 ** 4 * (1 + 8 / 12 - 2 * 1 / 12)
+        gf.symanzik_gauge_action(), 6 * 4 ** 4 * (1 + 8 / 12 - 2 * 1 / 12)
     )
     assert np.isclose(
-        gauge.iwasaki_gauge_action(), 6 * 4 ** 4 * (1 + 8 * 0.331 - 2 * 0.331)
+        gf.iwasaki_gauge_action(), 6 * 4 ** 4 * (1 + 8 * 0.331 - 2 * 0.331)
     )
 
 
 def test_random():
-    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    gauge.random()
-    assert -1 <= gauge.plaquette() <= 1
+    gf = gauge(lattice=lattice)
+    gf.random()
+    assert -1 <= gf.plaquette() <= 1
     assert np.isclose(
-        gauge.plaquette(), (gauge.temporal_plaquette() + gauge.spatial_plaquette()) / 2
+        gf.plaquette(), (gf.temporal_plaquette() + gf.spatial_plaquette()) / 2
     )
 
 
 def test_dumps():
-    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    gauge.random()
-    assert dumps(gauge)
+    gf = gauge(lattice=lattice)
+    gf.random()
+    assert dumps(gf)
 
 
 def test_global():
-    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    gauge.random()
-    gauge.copy_to_global()
-    assert (gauge == get_g_gauge_field()).all()
+    gf = gauge(lattice=lattice)
+    gf.random()
+    gf.copy_to_global()
+    assert (gf == get_g_gauge_field()).all()
 
-    gauge_copy = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    gauge_copy.copy_from_global()
-    assert (gauge == gauge_copy).all()
+    gf_copy = gauge(lattice=lattice)
+    gf_copy.copy_from_global()
+    assert (gf == gf_copy).all()
 
 
 def test_io():
     tmp = tempfile.mkdtemp()
-    gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    gauge.random()
-    gauge.write(tmp + "/conf")
-    gauge_read = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-    gauge_read.read(tmp + "/conf")
-    assert (gauge == gauge_read).all()
+    gf = gauge(lattice=lattice)
+    gf.random()
+    gf.write(tmp + "/conf")
+    gf_read = gauge(lattice=lattice)
+    gf_read.read(tmp + "/conf")
+    assert (gf == gf_read).all()
 
 
 # def test_stout():
-#     gauge = Gauge(np.zeros((4, 4, 4, 4, 4, 3, 3), dtype="complex"))
-#     gauge.random()
-#     stout = gauge.stout_smearing(0.1,1)
-#     assert (stout==gauge).all()
+#     gf = gauge(lattice=lattice)
+#     gf.random()
+#     stout = gf.stout_smearing(0.1,1)
+#     assert (stout==gf).all()
 
 
 def test_g_iup():

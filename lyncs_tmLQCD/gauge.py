@@ -4,13 +4,15 @@ Functions for gauge field
 
 __all__ = [
     "Gauge",
+    "gauge",
     "get_g_gauge_field",
 ]
 
+from functools import partial
 from numpy import prod, frombuffer
 from lyncs_cppyy.ll import to_pointer, addressof, free
 from lyncs_utils import static_property
-from .base import Field
+from .base import Field, field
 from .lib import lib
 
 
@@ -118,6 +120,9 @@ class Gauge(Field):
     #     params = lib.stout_parameters(rho,niters)
     #     lib.stout_smear(out.su3_field, params, self.su3_field)
     #     return out
+
+
+gauge = partial(field, ftype=Gauge)
 
 
 def get_g_gauge_field():
