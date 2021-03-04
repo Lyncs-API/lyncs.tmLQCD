@@ -1,3 +1,4 @@
+from pytest import raises
 import numpy as np
 from lyncs_tmLQCD import gauge, spinor, half_spinor
 
@@ -25,6 +26,12 @@ def test_init():
     ope = gf.operator(csw=1, half=True)
     for name in half_operators:
         assert callable(getattr(ope, name))
+
+    ope = gf.operator(csw=0, half=False)
+    for name in half_operators:
+        if name not in full_operators:
+            with raises(ValueError):
+                getattr(ope, name)
 
 
 def test_apply():
