@@ -34,6 +34,13 @@ class tmLQCDLib(Lib):
         "Whether the global structure of tmLQCD has been initialized"
         return self._initialized
 
+    @property
+    def lattice(self):
+        "Returns the initialized local lattice"
+        if not self.initialized:
+            raise RuntimeError("tmLQCD has not been initialized yet")
+        return (self.LX, self.LY, self.LZ, self.T)
+
     def initialize(self, x, y, z, t, comm=None, seed=None):
         "Initializes the global structure of tmLQCD"
 
@@ -80,8 +87,11 @@ class tmLQCDLib(Lib):
         self.init_geometry_indices(self.VOLUMEPLUSRAND + self.g_dbw2rand)
         self.geometry()
         self.init_gauge_field(
-            self.VOLUMEPLUSRAND + self.g_dbw2rand, 0
+            self.VOLUMEPLUSRAND + self.g_dbw2rand, 1
         )  # 0 for _GAUGE_COPY
+        self.DUM_MATRIX = 0
+        self.init_spinor_field(self.VOLUMEPLUSRAND // 2, 8)
+        self.init_dirac_halfspinor()
         self._initialized = True
 
 
@@ -95,8 +105,11 @@ headers = [
     "gamma.h",
     "io/gauge.h",
     "io/params.h",
+    "include/tmlqcd_config.h",
     "init/init_geometry_indices.h",
     "init/init_gauge_field.h",
+    "init/init_spinor_field.h",
+    "init/init_dirac_halfspinor.h",
     "linalg/convert_even_to_lexic.h",
     "linalg/convert_eo_to_lexic.h",
     "linalg/convert_odd_to_lexic.h",
@@ -105,7 +118,11 @@ headers = [
     "read_input.h",
     "measure_gauge_action.h",
     "measure_rectangles.h",
-    "operator.h",
+    "operator/tm_operators.h",
+    "operator/D_psi.h",
+    "operator/tm_operators_nd.h",
+    "operator/clovertm_operators.h",
+    "operator/clover_leaf.h",
     "rational/elliptic.h",
     "rational/zolotarev.h",
     # "smearing/stout.h",
