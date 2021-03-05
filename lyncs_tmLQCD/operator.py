@@ -101,13 +101,13 @@ class Operator:
 
         if doublet:
 
-            def caller(even, odd, out_even=None, out_odd=None):
-                even = spinor(even)
-                odd = spinor(odd)
-                out_even = empty_like(even) if out_even is None else spinor(out_even)
-                out_odd = empty_like(odd) if out_odd is None else spinor(out_odd)
-                fnc(out_even.spinor, out_odd.spinor, even.spinor, odd.spinor)
-                return (out_even, out_odd)
+            def caller(vec1, vec2, out_vec1=None, out_vec2=None):
+                vec1 = spinor(vec1)
+                vec2 = spinor(vec2)
+                out_vec1 = empty_like(vec1) if out_vec1 is None else spinor(out_vec1)
+                out_vec2 = empty_like(vec2) if out_vec2 is None else spinor(out_vec2)
+                fnc(out_vec1.spinor, out_vec2.spinor, vec1.spinor, vec2.spinor)
+                return (out_vec1, out_vec2)
 
         else:
 
